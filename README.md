@@ -20,11 +20,8 @@
 
 * The segmentation function uses cv::connectedComponenetsWithStats to identify regions in the image. Colors the background black, then colors each other region in the image a random color.
 
-<img align="right" src="https://user-images.githubusercontent.com/98133775/223348942-2ea47001-d977-4ca5-8543-e46e41ecdae9.png" width="200px" alt="picture">
-
 * Calculates moments with cv::moments() and cv::HuMoments(). The moments() function returns spatial, central, and normalized central moments, the HuMoments() function uses these and returns 7 moments that are invariant to translation, rotation, and scale, the seventh moment covers reflection/mirroring of the object. A log transform is used on the Hu Moments to bring them into a similar range of each other.
 The bounding box coordinates were obtained from the cv::connectedComponentsWithStats() function. Within the cv::Mat stats parameter the top and left coordinates to the bounding box are given, as well as the height and width of the object. The coordinates were obtained as follows, top-left: (x = left-coord, y= top-coord), top-right: (x = left-coord + width, y = top-coord), bottom-left: (x = left-coord, y = top-coord + height), bottom-right: (x = left-coord + width, y = top-coord + height). These coordinates had a line drawn from one to the next using cv::line().
-<img align="right" src="https://user-images.githubusercontent.com/98133775/207860960-6d09561f-93ae-4663-aa24-b004edfebdf5.png" width="200px" alt="picture">
 
 
 
