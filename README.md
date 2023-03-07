@@ -19,11 +19,16 @@
 <img align="right" src="https://user-images.githubusercontent.com/98133775/223348840-b67a7b8d-874b-44d9-8d5a-c476f95ae6cc.png" width="200px" alt="picture">
 
 * The segmentation function uses cv::connectedComponenetsWithStats to identify regions in the image. Colors the background black, then colors each other region in the image a random color.
-<img align="right" src="[https://user-images.githubusercontent.com/98133775/207860960-6d09561f-93ae-4663-aa24-b004edfebdf5.png](https://user-images.githubusercontent.com/98133775/223348942-2ea47001-d977-4ca5-8543-e46e41ecdae9.png)" width="200px" alt="picture">
+
+<img align="right" src="https://user-images.githubusercontent.com/98133775/223348942-2ea47001-d977-4ca5-8543-e46e41ecdae9.png" width="200px" alt="picture">
+
 * Calculates moments with cv::moments() and cv::HuMoments(). The moments() function returns spatial, central, and normalized central moments, the HuMoments() function uses these and returns 7 moments that are invariant to translation, rotation, and scale, the seventh moment covers reflection/mirroring of the object. A log transform is used on the Hu Moments to bring them into a similar range of each other.
 The bounding box coordinates were obtained from the cv::connectedComponentsWithStats() function. Within the cv::Mat stats parameter the top and left coordinates to the bounding box are given, as well as the height and width of the object. The coordinates were obtained as follows, top-left: (x = left-coord, y= top-coord), top-right: (x = left-coord + width, y = top-coord), bottom-left: (x = left-coord, y = top-coord + height), bottom-right: (x = left-coord + width, y = top-coord + height). These coordinates had a line drawn from one to the next using cv::line().
-<img align="right" src="https://user-images.githubusercontent.com/98133775/207860960-6d09561f-93ae-4663-aa24-b004edfebdf5.png" width="360px" alt="picture">
+<img align="right" src="https://user-images.githubusercontent.com/98133775/207860960-6d09561f-93ae-4663-aa24-b004edfebdf5.png" width="200px" alt="picture">
 
+
+
+<img align="right" src="https://user-images.githubusercontent.com/98133775/223349474-92947a52-4d49-467d-b5c4-bd7e56285811.png" width="200px" alt="picture">
 
 ## Training Explanation
 * Each object in the system has a feature vector, this feature vector consists of the 7 moments calculated in the feature computation step. Within the given database 10 images are stored, these images are jpg 3 color-channel images with no alterations. Each picture represents one object we can recognize. From the database the program computes a vector of  ImageData structs, with the ID set as the image name without the “.pdf” and the feature vector being the HuMoments vector created after each image is thresholded, cleaned up, segmented, and has it’s features (moments) computed. These feature vectors are used as the training data. A standard deviation is calculated for each Hu moment stored in the feature vectors, to be used in the calculation of distances while comparing live video frames to the database images.
