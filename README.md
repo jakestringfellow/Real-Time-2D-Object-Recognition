@@ -4,8 +4,8 @@
 * https://www.youtube.com/watch?v=wILkbFamZw0
 * Quick, <1 minute Demonstration of the Real-Time 2D Object Recognition Project on some of the recognizable objects
 
-<img align="right" src="https://user-images.githubusercontent.com/98133775/207860960-6d09561f-93ae-4663-aa24-b004edfebdf5.png" width="360px" alt="picture">
-<img align="right" src="https://user-images.githubusercontent.com/98133775/207860960-6d09561f-93ae-4663-aa24-b004edfebdf5.png" width="360px" alt="picture">
+<img align="right" src="https://user-images.githubusercontent.com/98133775/223347231-5374a2f2-cc68-4be8-bbb1-3018c8cfcf04.png" width="360px" alt="picture">
+<img align="right" src="https://user-images.githubusercontent.com/98133775/223347383-1ce5eaf6-c510-447f-9eb2-de6bb3957655.png" width="360px" alt="picture">
 
 ## Project Description: 
 
