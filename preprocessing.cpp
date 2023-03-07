@@ -2,7 +2,8 @@
    CS 5330 Spring 2023
    Project 3: Real-time 2D Object Recognition
    preprocessing.cpp
-   Implements functionality necessary for thresholding live video
+   Implements functionality necessary for manipulating Mat
+   images and Mat image data for 2D object recognition
 */
 
 #include <cstdio>
@@ -32,7 +33,6 @@ cv::Mat preprocess_threshold(cv::Mat &src) {
     cv::Mat blur_gray = cv::Mat::zeros ( src.size(), CV_8UC1);
     cv::Size kSize = cv::Size(5,5);
     cv::GaussianBlur(gray, blur_gray, kSize, 0);
-//    std::cout << blur_gray.shape() << std::endl;
 
     // Access individual pixels determine foreground and background
     // Pixels with an intensity over 100 will be determined background
@@ -46,14 +46,17 @@ cv::Mat preprocess_threshold(cv::Mat &src) {
 	    // For each color channel
                 // Set the processed pixel to 0 for all background pixels, 255 for all foreground
 		if (rptr[j] >= 100) {
+		    // Set light pixels to black
                     result.at<uchar>(i,j) = 0;
 		}
 		else {
+		    // Set dark pixels to white
 		    result.at<uchar>(i,j) = 255;
 		}
             
         }
     }
+    // Return binary image
     return result;
 }
 
@@ -61,7 +64,7 @@ cv::Mat preprocess_threshold(cv::Mat &src) {
    then grows back to clean up holes in the image. Uses erosion followed by dilation to remove noise, then 
    dilation followed by erosion to remove the holes caused by the reflections.
    Parameters: src, a binary mat object that will be cleaned up
-   Results: A cleaned up binary Mat image 
+   Returns: A cleaned up binary Mat image 
 */
 cv::Mat cleanup(cv::Mat &src) {
     // Initialize variables, result = thresholded frame after clean up
@@ -77,11 +80,13 @@ cv::Mat cleanup(cv::Mat &src) {
     // Use openCV's closing to close up reflections (dilation followed by erosion)
     cv::morphologyEx(result, result, cv::MORPH_CLOSE, closeElem);
 
+    // Return cleaned up binary image
     return result;
 }
 
-/*Function for connected component analysis
-
+/*Function for connected component analysis, creates segmented, region-colored version of the src image
+  Parameters: a src image to be sampled from, then Mat data types for labels, stats, and centroid calculation.
+  Returns: a segmented, region colored version of the src image
 */
 cv::Mat analysis(cv::Mat &src, cv::Mat labels, cv::Mat stats, cv::Mat centroids, int nLabels) {
 
@@ -100,17 +105,6 @@ cv::Mat analysis(cv::Mat &src, cv::Mat labels, cv::Mat stats, cv::Mat centroids,
 
     std::vector<cv::Vec3b> colors(nLabels);
     
-    // PRINTING BOUND BOX COORDS
-    //for(int label = 1; label < nLabels; ++label){
-    //    if (stats.at<int>(label, cv::CC_STAT_AREA) >= min_size) {
-    //        std::cout << stats.at<int>(label, cv::CC_STAT_LEFT) << std::endl;
-    //        std::cout << stats.at<int>(label, cv::CC_STAT_TOP) << std::endl;
-	//    std::cout << stats.at<int>(label, cv::CC_STAT_WIDTH) << std::endl;
-	//    std::cout << stats.at<int>(label, cv::CC_STAT_HEIGHT) << std::endl;
-        //}
-    //}
-
-    
 
     // The first value is for the background, color black
     colors[0] = cv::Vec3b(0, 0, 0);
@@ -121,8 +115,7 @@ cv::Mat analysis(cv::Mat &src, cv::Mat labels, cv::Mat stats, cv::Mat centroids,
         }
     }
     
-
-    //cv::Mat dst(src.size(), CV_8UC3);
+    
     // Color the entire region the same color
     for(int r = 0; r < result.rows; ++r){
         for(int c = 0; c < result.cols; ++c){
@@ -135,7 +128,12 @@ cv::Mat analysis(cv::Mat &src, cv::Mat labels, cv::Mat stats, cv::Mat centroids,
 }
 
 /* Computes huMoment feature vector, computes and displays oriented bounding box
-
+   Paramters: Mat src: binary image to be sampled from
+	      Mat src_regions: colored_region image to sample for dst image
+	      Mat dst: destination image, segmented, colored regions, bound box and first Hu Moment display
+	      Mat stats: stats for bound box coordinates
+	      int nLabels, number of regions in given frame
+   Returns:   Hu momoment feature vector of floating point numbers
 */
 std::vector<float> feature_computation(cv::Mat &src, cv::Mat &src_regions, cv::Mat &dst, cv::Mat stats, int nLabels) {
 
@@ -170,7 +168,6 @@ std::vector<float> feature_computation(cv::Mat &src, cv::Mat &src_regions, cv::M
 
     // Obtain bound box coords for each object
     // Draw bound box for each object
-    //std::cout << nLabels << std::endl;
     for(int label = 1; label < nLabels; label++){
         if (stats.at<int>(label, cv::CC_STAT_AREA) >= min_size) {
 	    std::vector<cv::Point> points;
@@ -185,7 +182,8 @@ std::vector<float> feature_computation(cv::Mat &src, cv::Mat &src_regions, cv::M
 	    points.push_back(bottom_left);
 	    // Store the point for the bottom right vertex
 	    cv::Point bottom_right = cv::Point(stats.at<int>(label, cv::CC_STAT_WIDTH)+stats.at<int>(label, cv::CC_STAT_LEFT),stats.at<int>(label, cv::CC_STAT_HEIGHT)+stats.at<int>(label, cv::CC_STAT_TOP));
-	    //points.push_back(bottom_right);
+	
+	    // Create the box based on the coordinates
 	    cv::RotatedRect box = cv::minAreaRect(cv::Mat(points));
 
 	    // Draw the bound box
@@ -205,35 +203,12 @@ std::vector<float> feature_computation(cv::Mat &src, cv::Mat &src_regions, cv::M
             cv::Vec3b textColor = cv::Vec3b(255,0,255);
             int thickness = 2;
 
+	    // Draw the text to the dest image
             cv::putText(dst, text, textCoords, cv::FONT_HERSHEY_SIMPLEX, fontScale, textColor, thickness, cv::LINE_AA);
         }
     }
-    //cv::Point p1 = cv::Point(0,0);
-    //cv::Point p2 = cv::Point(200,200);
-    //cv::line(dst, p1, p2, cv::Scalar(0,255,0),1, cv::LINE_AA);
 
-    // Calculate moments
-    //cv::Moments moments = cv::moments(src, false);
-    // Calculate Hu Moments
-    //double huMoments[7];
-    //cv::HuMoments(moments, huMoments);
-    // Resulting hu moments have a HUGE range, use a log transform to bring them to same range
-    //for(int i=0; i<7; i++) {
-    //	huMoments[i] = -1 * copysign(1.0,huMoments[i]) * log10(abs(huMoments[i]));
-    //}
-    
-    // Display first region HuMoment for each region underneath the bounding box
-    //std::string text = "hu[0] =" + huMoments[0];
-    //cv::Point textCoords = (cv::Point(stats.at<int>(label, cv::CC_STAT_LEFT),stats.at<int>(label, cv::CC_STAT_TOP) +stats.at<int>(label, cv::CC_STAT_HEIGHT) - 20))
-    //cv::Font font = cv::FONT_HERSHEY_SIMPLEX;
-    //cv::fontScale fontScale = 1;
-    //cv::Vec3b textColor = cv::Vec3b(255,0,255);
-    //int thickness = 2;
-
-    //dst = cv::putText(dst, text, textCoords, font, fontScale, textColor, thickness, cv::LINE_AA);
-
-
-
+    // Convert the Hu Moment array to a vector for ease of use
     int n = sizeof(huMoments) / sizeof(huMoments[0]);
     std::vector<float> huVector(huMoments, huMoments + n);
     return huVector;
