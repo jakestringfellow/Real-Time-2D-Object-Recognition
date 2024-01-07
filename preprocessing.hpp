@@ -1,5 +1,4 @@
-/* Jake Stringfellow
-   CS 5330 Spring 2023  
+/* Jake Stringfellow 
    Project 3: Real-time 2D Object Recognition
    preprocessing.hpp
    Header file for live video processing

@@ -1,6 +1,5 @@
 /* Jake Stringfellow
-   CS 5330 Spring 2023
-   Project 3: Real-time 2D Object Recognition
+   Real-time 2D Object Recognition
    preprocessing.cpp
    Implements functionality necessary for manipulating Mat
    images and Mat image data for 2D object recognition
